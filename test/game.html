@@ -1,0 +1,168 @@
+<html>
+	<head>
+		<title> Ê∂˚Ãÿ”Œœ∑</title>
+		<style type="text/css">
+			body{background:#00FF00;}
+			#gamepad{
+				position:absolute;
+				top:50%;
+				left:50%;
+				margin:-150px 0 0 -150px;
+				text-align:center;
+				border:hidden;
+			}
+			#game{
+				margin:0 auto;
+			}
+			#randNum{
+				border:solid 1px #000000;
+				text-align:center;
+				font-size:20pt;
+			}
+			td{
+				border:solid 1px #000000;
+				padding:0.3cm;
+			}
+			#usefulPad{
+				padding:1cm;
+				border:hidden;
+			}
+			#statistics{
+				border:solid 1px #C00;
+				text-align:center;
+				font-size:16px;
+			}
+		</style>
+	</head>
+	<body>
+    	<table id="gamepad">
+        	<tr>
+            	<td id="gameZone">
+                	<div id="gameboard">
+						<div id="game"></div>
+            			<p id="timebar">Time: <span id="time">00:00:00</span></p>
+            			<input type="button" value="start" id="gamecontrol" onClick="gameControl()">
+            			<input type="button" value="reset" id="refresh" onClick="refresh()">
+					</div>
+                </td>
+             </tr>
+             <tr>
+                <td id="usefulPad"></td>
+                <td rowspan="3" id="statZone">
+                	<table id = "statistics">
+                    	<th>Top 10</th>
+                        <tr><td id="top1">--.--</td></tr>
+                        <tr><td id="top2">--.--</td></tr>
+                       	<tr><td id="top3">--.--</td></tr>
+                       	<tr><td id="top4">--.--</td></tr>
+                      	<tr><td id="top5">--.--</td></tr>
+                       	<tr><td id="top6">--.--</td></tr>
+                       	<tr><td id="top7">--.--</td></tr>
+                       	<tr><td id="top8">--.--</td></tr>
+                       	<tr><td id="top9">--.--</td></tr>
+                       	<tr><td id="top10">--.--</td></tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+		<script type="text/javascript">
+			function randArray(arr) {
+				arr.sort(function () {
+					return Math.random() - 0.5
+				})
+			}
+			function gameControl(){
+				if (gameStart) {
+					startCounter()
+					gameStart = false
+					document.getElementById("gamecontrol").value = "stop"
+				} else {
+					stopCounter()
+					gameStart = true
+					document.getElementById("gamecontrol").value = "resume"
+				}
+			}
+			function startCounter() {
+				counter = setInterval(calcTime, 10)
+				startTime = new Date()
+			}
+			function stopCounter() {
+				clearInterval(counter)
+				endTime = new Date()
+				elapse +=  endTime - startTime
+			}
+			function refresh(){
+				location.reload()
+			}
+			function calcTime() {
+				ss += 1
+				s += Math.floor(ss/tt)
+				ss %= tt
+				m += Math.floor(s/60)
+				s %= 60
+				var time2str = ""
+				if (m < 10) {
+					time2str = time2str + "0" + m
+				} else {
+					time2str = time2str + m
+				}
+				if (s < 10) {
+					time2str = time2str + ":0" + s
+				} else {
+					time2str = time2str + ":" + s
+				}
+				if (ss < 10) {
+					time2str = time2str + ":0" + ss
+				} else {
+					time2str = time2str + ":" + ss
+				}
+				document.getElementById("time").innerHTML = time2str;
+			}
+			function checkFinish(num) {
+				if (!gameStart){
+					var i = parseInt(num)
+					if (i == 1 || checked[i-2] == 1) {
+						checked[i-1] = 1
+					}
+					if (checked[24] == 1) {
+						roundOver()
+					}
+					if (checked[i-1] == 1 && checked[i] == 0){
+						document.getElementById("next").innerHTML = "Next: " + (i+1)
+					}
+				}
+			}
+			function roundOver() {
+				clearInterval(counter)
+				document.getElementById("gamecontrol").value = "start"
+				endTime = new Date()
+				elapse += endTime - startTime
+				alert("You made it in approximately " + elapse/1000 + " seconds")
+				refresh()
+			}
+		
+			var gameStart = true
+			var counter, ss = 0, s = 0, m = 0, tt = 90
+			var startTime, endTime, elapse = 0
+			var arr = new Array(25)
+			var checked = new Array(25)
+			board = document.getElementById("game")
+			for (var i = 1; i <= 25; ++i) {
+				arr[i-1] = i
+				checked[i-1] = 0
+			}
+			randArray(arr)
+			var str = "<table id=\"randNum\"><tr><td colspan=\"5\"><span id=\"next\">Next: 1</span></td></tr>"
+			for (var i = 0; i < 5; ++i) {
+				str = str + "<tr>"
+				for (var j = 0; j < 5; ++j) {
+					str = str + "<td" + " onClick = \"checkFinish(" + arr[i*5+j] + ")\" >" + arr[i*5+j] + "</td>"
+				}
+				str = str + "</tr>"
+			}
+			str = str + "</table>"
+			
+			board.innerHTML = str
+		</script>
+	</body>
+</html>
